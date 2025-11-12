@@ -1,0 +1,280 @@
+------------------------------------------------------------
+--- Start Report ---
+------------------------------------------------------------
+Scanning settings for the following applications:
+  Applications Detected:
+    - Waybar
+    - Kitty
+    - Hyprland
+    - Hyprpaper
+    - Hyprlock
+  Applications Not Detected:
+    - Sway
+----------------------------------------
+
+--- Waybar Modules ---
+  [modules-left]
+    - custom/appmenu (no style detected)
+    - hyprland/workspaces (no style detected)
+    - group/quicklinks (no style detected)
+  [modules-center]
+    - hyprland/window (no style detected)
+  [modules-right]
+    - mpd (no style detected)
+    - pulseaudio*
+    - network*
+    - cpu (no style detected)
+    - memory (no style detected)
+    - tray* F:[48;2;255;255;255m  [0m
+    - custom/exit (no style detected)
+    - clock*
+----------------------------------------
+--- Kitty Configuration ---
+  [kitty.conf]
+    font_family: JetBrainsMono Nerd Font
+    font_size: 12
+    bold_font: JetBrainsMono Nerd Font Bold
+    italic_font: JetBrainsMono Nerd Font Italic
+    bold_italic_font: JetBrainsMono Nerd Font Bold Italic
+    remember_window_size: no
+    initial_window_width: 950
+    initial_window_height: 500
+    cursor_blink_interval: 0.5
+    cursor_stop_blinking_after: 1
+    scrollback_lines: 2000
+    wheel_scroll_min_lines: 1
+    enable_audio_bell: no
+    window_padding_width: 10
+    hide_window_decorations: yes
+    background_opacity: 0.7
+    dynamic_background_opacity: yes
+    confirm_os_window_close: 0
+    selection_foreground: none
+    selection_background: none
+    cursor_trail: 2
+----------------------------------------
+
+--- Hyprland Configuration ---
+
+  [Variables]
+    $mainMod = [92mSUPER[0m [90m(from binds.conf)[0m
+
+  [Keybindings]
+    bind = $mainMod, [92mRETURN[0m, [96mexec[0m, kitty [33m# Open Alactritty[0m [90m(from binds.conf)[0m
+    bind = $mainMod, Q, killactive [33m# Close current window[0m [90m(from binds.conf)[0m
+    bind = $mainMod, M, exit [33m# Exit Hyprland[0m [90m(from binds.conf)[0m
+    bind = $mainMod, E, [96mexec[0m, ~/.config/ml4w/settings/filemanager.sh [33m# Opens the filemanager[0m [90m(from binds.conf)[0m
+    bind = $mainMod, T, togglefloating [33m# Toggle between tiling and floating window[0m [90m(from binds.conf)[0m
+    bind = $mainMod, F, fullscreen [33m# Open the window in fullscreen[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mCTRL[0m, [92mRETURN[0m, [96mexec[0m, rofi -show drun [33m# Open rofi[0m [90m(from binds.conf)[0m
+    bind = $mainMod, P, pseudo, [33m# dwindle[0m [90m(from binds.conf)[0m
+    bind = $mainMod, J, togglesplit, [33m# dwindle[0m [90m(from binds.conf)[0m
+    bind = $mainMod, B, [96mexec[0m, ~/.config/ml4w/settings/browser.sh [33m# Opens the browser[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, B, [96mexec[0m, ~/.config/ml4w/scripts/reload-waybar.sh [33m# Reload Waybar[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, W, [96mexec[0m, ~/.config/ml4w/scripts/reload-hyprpaper.sh [33m# Reload hyprpaper after a changing the wallpaper[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, [92mright[0m, [96mmovetoworkspace[0m, +1 [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, [92mleft[0m, [96mmovetoworkspace[0m, -1  [90m(from binds.conf)[0m
+    bind = $mainMod, [92mhome[0m , [96mexec[0m, hyprshot -m region [33m# ~/.config/hyprshot/hsregion.sh[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, R, [96mexec[0m, /usr/bin/hyprctl reload [90m(from binds.conf)[0m
+    bind = , XF86AudioRaiseVolume, [96mexec[0m, wpctl [96mset[0m-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+ [90m(from binds.conf)[0m
+    bind = , XF86AudioLowerVolume, [96mexec[0m, wpctl [96mset[0m-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%- [90m(from binds.conf)[0m
+    bind = , XF86MonBrightnessUp, [96mexec[0m, brightnessctl [96mset[0m 10%+ [90m(from binds.conf)[0m
+    bind = , XF86MonBrightnessDown, [96mexec[0m, brightnessctl [96mset[0m 10%- [90m(from binds.conf)[0m
+    bind = , XF86AudioMute, [96mexec[0m, wpctl [96mset[0m-mute @DEFAULT_AUDIO_SINK@ toggle [90m(from binds.conf)[0m
+    bind = , XF86AudioMicMute, [96mexec[0m, wpctl [96mset[0m-mute @DEFAULT_AUDIO_SOURCE@ toggle [90m(from binds.conf)[0m
+    bind = , XF86WLAN, [96mexec[0m, nmcli radio wifi toggle [90m(from binds.conf)[0m
+    bind = , XF86Refresh, [96mexec[0m, xdotool key F5 [90m(from binds.conf)[0m
+    bind = $mainMod, [92mleft[0m, movefocus, l [33m# Move focus left[0m [90m(from binds.conf)[0m
+    bind = $mainMod, [92mright[0m, movefocus, r [33m# Move focus right[0m [90m(from binds.conf)[0m
+    bind = $mainMod, [92mup[0m, movefocus, u [33m# Move focus up[0m [90m(from binds.conf)[0m
+    bind = $mainMod, [92mdown[0m, movefocus, d [33m# Move focus down[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 1, [96mworkspace[0m, 1 [33m# Switch to workspace 1[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 2, [96mworkspace[0m, 2 [33m# Switch to workspace 2[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 3, [96mworkspace[0m, 3 [33m# Switch to workspace 3[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 4, [96mworkspace[0m, 4 [33m# Switch to workspace 4[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 5, [96mworkspace[0m, 5 [33m# Switch to workspace 5[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 6, [96mworkspace[0m, 6 [33m# Switch to workspace 6[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 7, [96mworkspace[0m, 7 [33m# Switch to workspace 7[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 8, [96mworkspace[0m, 8 [33m# Switch to workspace 8[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 9, [96mworkspace[0m, 9 [33m# Switch to workspace 9[0m [90m(from binds.conf)[0m
+    bind = $mainMod, 0, [96mworkspace[0m, 10 [33m# Switch to workspace 10[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 1, [96mmovetoworkspace[0m, 1 [33m#  Move window to workspace 1[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 2, [96mmovetoworkspace[0m, 2 [33m#  Move window to workspace 2[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 3, [96mmovetoworkspace[0m, 3 [33m#  Move window to workspace 3[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 4, [96mmovetoworkspace[0m, 4 [33m#  Move window to workspace 4[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 5, [96mmovetoworkspace[0m, 5 [33m#  Move window to workspace 5[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 6, [96mmovetoworkspace[0m, 6 [33m#  Move window to workspace 6[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 7, [96mmovetoworkspace[0m, 7 [33m#  Move window to workspace 7[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 8, [96mmovetoworkspace[0m, 8 [33m#  Move window to workspace 8[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 9, [96mmovetoworkspace[0m, 9 [33m#  Move window to workspace 9[0m [90m(from binds.conf)[0m
+    bind = $mainMod [92mSHIFT[0m, 0, [96mmovetoworkspace[0m, 10 [33m#  Move window to workspace 10[0m [90m(from binds.conf)[0m
+    bind = $mainMod, mouse_down, [96mworkspace[0m, e+1 [33m# Scroll workspaces [0m [90m(from binds.conf)[0m
+    bind = $mainMod, mouse_up, [96mworkspace[0m, e-1 [33m# Scroll workspaces[0m [90m(from binds.conf)[0m
+    bindm = $mainMod, mouse:272, movewindow [33m# Move window[0m [90m(from binds.conf)[0m
+    bindm = $mainMod, mouse:273, resizewindow [33m# Resize window[0m [90m(from binds.conf)[0m
+
+  [Application Autostart]
+    [96mexec-once[0m = waybar [90m(from autostart.conf)[0m
+    [96mexec-once[0m = hyprpaper [90m(from autostart.conf)[0m
+    [96mexec-once[0m = dunst [90m(from autostart.conf)[0m
+    [96mexec[0m = ~/.config/ml4w-hyprland-settings/hyprctl.sh [90m(from autostart.conf)[0m
+
+  [Input Configuration]
+    input [95m{[0m [90m(from input.conf)[0m
+        kb_layout = us
+        kb_variant =
+        kb_model =
+        kb_options =
+        kb_rules =
+    
+        follow_mouse = 1
+    
+        touchpad [95m{[0m [90m(from input.conf)[0m
+            natural_scroll = false
+        [95m}[0m
+     [90m(from input.conf)[0m
+        sensitivity = 0 [33m# -1.0 - 1.0, 0 means no modification.[0m [90m(from input.conf)[0m
+    [95m}[0m
+
+  [General Settings]
+    general [95m{[0m [90m(from general.conf)[0m
+        gaps_in = 5
+        gaps_out = 20
+        border_size = 2
+        col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+        col.inactive_border = rgba(595959aa)
+        layout = dwindle
+        resize_on_border = true
+    [95m}[0m
+
+  [Decoration Settings]
+    decoration [95m{[0m [90m(from decoration.conf)[0m
+        rounding = 10
+        blur [95m{[0m [90m(from decoration.conf)[0m
+            enabled = true
+            size = 3
+            passes = 1
+        [95m}[0m
+        shadow [95m{[0m [90m(from decoration.conf)[0m
+            enabled = true
+            range = 4
+            render_power = 3
+            color = rgba(1a1a1aee)
+        [95m}[0m
+    [95m}[0m
+
+  [Animation Settings]
+    animations [95m{[0m [90m(from animations.conf)[0m
+        enabled = true
+        [33m# Animation curves[0m
+        
+        bezier = linear, 0, 0, 1, 1
+        bezier = md3_standard, 0.2, 0, 0, 1
+        bezier = md3_decel, 0.05, 0.7, 0.1, 1
+        bezier = md3_accel, 0.3, 0, 0.8, 0.15
+        bezier = overshot, 0.05, 0.9, 0.1, 1.1
+        bezier = crazyshot, 0.1, 1.5, 0.76, 0.92 
+        bezier = hyprnostretch, 0.05, 0.9, 0.1, 1.0
+        bezier = menu_decel, 0.1, 1, 0, 1
+        bezier = menu_accel, 0.38, 0.04, 1, 0.07
+        bezier = easeInOutCirc, 0.85, 0, 0.15, 1
+        bezier = easeOutCirc, 0, 0.55, 0.45, 1
+        bezier = easeOutExpo, 0.16, 1, 0.3, 1
+        bezier = softAcDecel, 0.26, 0.26, 0.15, 1
+        bezier = md2, 0.4, 0, 0.2, 1 [33m# use with .2s duration[0m
+        [33m# Animation configs[0m
+        animation = windows, 1, 3, md3_decel, popin 60%
+        animation = windowsIn, 1, 3, md3_decel, popin 60%
+        animation = windowsOut, 1, 3, md3_accel, popin 60%
+        animation = border, 1, 10, default
+        animation = fade, 1, 3, md3_decel
+        [33m# animation = layers, 1, 2, md3_decel, slide[0m
+        animation = layersIn, 1, 3, menu_decel, slide
+        animation = layersOut, 1, 1.6, menu_accel
+        animation = fadeLayersIn, 1, 2, menu_decel
+        animation = fadeLayersOut, 1, 4.5, menu_accel
+        animation = workspaces, 1, 7, menu_decel, slide
+        [33m# animation = workspaces, 1, 2.5, softAcDecel, slide[0m
+        [33m# animation = workspaces, 1, 7, menu_decel, slidefade 15%[0m
+        [33m# animation = specialWorkspace, 1, 3, md3_decel, slidefadevert 15%[0m
+        animation = specialWorkspace, 1, 3, md3_decel, slidevert
+    [95m}[0m
+
+  [Layout Settings]
+    dwindle [95m{[0m [90m(from layouts.conf)[0m
+        [33m# See https://wiki.hyprland.org/Configuring/Dwindle-Layout/ for more[0m
+        pseudotile = true [33m# master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below[0m
+        preserve_split = true [33m# you probably want this[0m
+    [95m}[0m
+    master [95m{[0m [90m(from layouts.conf)[0m
+        [33m# See https://wiki.hyprland.org/Configuring/Master-Layout/ for more[0m
+        [33m# new_status = master[0m
+    [95m}[0m
+
+  [Other]
+    monitor=,preferred,auto,1 [90m(from monitor.conf)[0m
+    env = XCURSOR_SIZE,24 [90m(from cursor.conf)[0m
+    env = XDG_CURRENT_DESKTOP,Hyprland [90m(from environments.conf)[0m
+    env = XDG_SESSION_TYPE,wayland [90m(from environments.conf)[0m
+    env = XDG_SESSION_DESKTOP,Hyprland [90m(from environments.conf)[0m
+    env = QT_QPA_PLATFORM,wayland;xcb [90m(from environments.conf)[0m
+    env = QT_QPA_PLATFORMTHEME,qt6ct [90m(from environments.conf)[0m
+    env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1 [90m(from environments.conf)[0m
+    env = QT_AUTO_SCREEN_SCALE_FACTOR,1 [90m(from environments.conf)[0m
+    env = GDK_SCALE,1 [90m(from environments.conf)[0m
+    env = MOZ_ENABLE_WAYLAND,1 [90m(from environments.conf)[0m
+    env = XCURSOR_SIZE,24 [90m(from environments.conf)[0m
+    env = APPIMAGELAUNCHER_DISABLE,1 [90m(from environments.conf)[0m
+    env = OZONE_PLATFORM,wayland [90m(from environments.conf)[0m
+    misc [95m{[0m [90m(from misc.conf)[0m
+        disable_hyprland_logo = true
+        disable_splash_rendering = true
+    [95m}[0m
+----------------------------------------
+
+--- Hyprpaper Configuration ---
+
+  [Settings]
+    preload = ~/images/wallpaper.jpg [90m(from hyprpaper.conf)[0m
+    wallpaper = DP-1,~/images/wallpaper.jpg [90m(from hyprpaper.conf)[0m
+
+  [Other]
+    splash = false [90m(from hyprpaper.conf)[0m
+    ipc = true [90m(from hyprpaper.conf)[0m
+----------------------------------------
+
+--- Hyprlock Configuration ---
+  - Detected: /home/owner/.config/hypr/hyprlock.conf [90m(from hyprlock.conf)[0m
+----------------------------------------
+
+[Files Overview]
+  Waybar Active configurations:
+  - /home/owner/.config/waybar/config
+  Kitty Active configurations:
+  - /home/owner/.config/kitty/kitty.conf
+  Hyprland Active configurations:
+  - /home/owner/.config/hypr/hyprland.conf
+  Hyprpaper Active configurations:
+  - /home/owner/.config/hypr/hyprpaper.conf
+  Hyprlock Active configurations:
+  - /home/owner/.config/hypr/hyprlock.conf
+  Waybar Styles:
+  - /home/owner/.config/waybar/style.css
+  Sourced configurations:
+  - /home/owner/.config/hypr/conf/monitor.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/autostart.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/cursor.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/environments.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/input.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/general.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/decoration.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/animations.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/layouts.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/gestures.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/misc.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/windowrules.conf [90m(sourced by: hyprland.conf)[0m
+  - /home/owner/.config/hypr/conf/binds.conf [90m(sourced by: hyprland.conf)[0m
+
+------------------------------------------------------------
+--- End Report ---
+------------------------------------------------------------

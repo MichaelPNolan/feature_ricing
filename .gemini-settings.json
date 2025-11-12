@@ -1,0 +1,18 @@
+{
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "description": "Waybar 'battery' module appears twice in the report.",
+      "status": "On Hold",
+      "module_name": "battery",
+      "application": "Waybar"
+    },
+    {
+      "id": "BUG-002",
+      "description": "Incorrect pattern matching for 'exec' type words in colorization, leading to 'exec-once' not being fully colorized.",
+      "status": "Completed",
+      "module_name": "colorize_sway",
+      "application": "Hyprland"
+    }
+  ]
+}
