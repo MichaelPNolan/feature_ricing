@@ -41,7 +41,11 @@ def hex_to_rgb(hex_color):
 
 def print_waybar_modules(waybar_modules):
     """Prints the Waybar modules section."""
+    print()
+    print("-" * 40)
     print("--- Waybar Modules ---")
+    print("-" * 40)
+    print()
     if waybar_modules:
         for position, modules in waybar_modules.items():
             if modules:
@@ -129,7 +133,11 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
     print()
 
     if "Sway" in detected_applications:
+        print()
+        print("-" * 40)
         print("--- Sway Configuration ---")
+        print("-" * 40)
+        print()
         for category, items in sway_features.items():
             if category == "Variables":
                 if items:
@@ -169,7 +177,11 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         print_waybar_modules(waybar_modules)
 
     if "Kitty" in detected_applications:
+        print()
+        print("-" * 40)
         print("--- Kitty Configuration ---")
+        print("-" * 40)
+        print()
         if kitty_configs:
             for config_path, config_data in kitty_configs.items():
                 print(f"  [{os.path.basename(config_path)}]")
@@ -239,9 +251,11 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         print("-" * 40)
         print()
 
+    print()
     print("-" * 40)
     print("--- Files Overview ---")
     print("-" * 40)
+    print()
     sway_active_configs = []
     sway_inactive_configs = []
     waybar_active_configs = []
