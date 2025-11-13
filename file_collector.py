@@ -3,12 +3,13 @@ import re
 from collections import defaultdict
 
 class FileMetadata:
-    def __init__(self, path, file_type="other", is_active=False):
+    def __init__(self, path, file_type="other", is_active=False, associated_app=None):
         self.path = path
         self.type = file_type
         self.is_active = is_active
         self.sourced_by = set()  # Files that source/include this file
         self.sources = set()     # Files that this file sources/includes
+        self.associated_app = associated_app # New attribute
 
     def add_sourced_by(self, file_path):
         self.sourced_by.add(file_path)
@@ -17,22 +18,24 @@ class FileMetadata:
         self.sources.add(file_path)
 
     def __repr__(self):
-        return f"FileMetadata(path='{self.path}', type='{self.type}', active={self.is_active}, sourced_by={len(self.sourced_by)}, sources={len(self.sources)})"
+        return f"FileMetadata(path='{self.path}', type='{self.type}', active={self.is_active}, associated_app='{self.associated_app}', sourced_by={len(self.sourced_by)}, sources={len(self.sources)})"
 
 class FileCollector:
     def __init__(self):
         self.files = {} # Stores FileMetadata objects, keyed by path
         self.wal_detected = False
 
-    def _get_or_create_file_metadata(self, file_path, file_type="other", is_active=False):
+    def _get_or_create_file_metadata(self, file_path, file_type="other", is_active=False, associated_app=None):
         if file_path not in self.files:
-            self.files[file_path] = FileMetadata(file_path, file_type, is_active)
+            self.files[file_path] = FileMetadata(file_path, file_type, is_active, associated_app)
         else:
             # Update type and active status if more specific information is provided
             if file_type != "other" and self.files[file_path].type == "other":
                 self.files[file_path].type = file_type
             if is_active:
                 self.files[file_path].is_active = True
+            if associated_app and not self.files[file_path].associated_app:
+                self.files[file_path].associated_app = associated_app
         return self.files[file_path]
 
     def add_active_config(self, file_path, file_type="active_config"):
@@ -43,8 +46,8 @@ class FileCollector:
         metadata = self._get_or_create_file_metadata(file_path, file_type, is_active=False)
         metadata.type = file_type # Ensure type is set correctly for inactive configs
 
-    def add_script(self, file_path):
-        self._get_or_create_file_metadata(file_path, "script")
+    def add_script(self, file_path, app_name=None):
+        self._get_or_create_file_metadata(file_path, "script", associated_app=app_name)
 
     def add_design_file(self, file_path):
         self._get_or_create_file_metadata(file_path, "design_file")

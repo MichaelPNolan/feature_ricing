@@ -89,7 +89,7 @@ def _parse_sway_file(file_path, features, file_collector):
                                 if os.path.exists(potential_script_path) and \
                                    os.path.isfile(potential_script_path) and \
                                    os.access(potential_script_path, os.X_OK):
-                                    file_collector.add_script(potential_script_path)
+                                    file_collector.add_script(potential_script_path, app_name="Sway")
                                     found_script = True
                                     break # Found an executable script, move to next line
                             if found_script:
@@ -132,7 +132,7 @@ def _parse_sway_file(file_path, features, file_collector):
                             if os.path.exists(potential_script_path) and \
                                os.path.isfile(potential_script_path) and \
                                os.access(potential_script_path, os.X_OK):
-                                file_collector.add_script(potential_script_path)
+                                file_collector.add_script(potential_script_path, app_name="Sway")
                                 found_script = True
                                 break # Found an executable script, move to next line
                         if found_script:
@@ -145,7 +145,7 @@ def _parse_sway_file(file_path, features, file_collector):
                             expanded_part = os.path.expanduser(part)
                             if os.path.exists(expanded_part):
                                 if os.path.isfile(expanded_part) and os.access(expanded_part, os.X_OK):
-                                    file_collector.add_script(expanded_part)
+                                    file_collector.add_script(expanded_part, app_name="Sway")
                                     break # Assume the first executable file found is the main script
 
                 elif line.startswith("gaps") or "background" in line or re.search(r'client\.', line):

@@ -1,13 +1,33 @@
 import re
 from collections import defaultdict
 import os
-from colorize_app_keywords import AppKeywordColorizer, COLOR_BRIGHT_BLACK, COLOR_RESET
+from colorize_app_keywords import AppKeywordColorizer, COLOR_BRIGHT_BLACK, COLOR_RESET, COLOR_KEY_NAME, COLOR_VARIABLE, COLOR_KEYWORD
 
 # Initialize the generic colorizer
 app_colorizer = AppKeywordColorizer()
 
 # Custom colors for the report
 COMMENT_COLOR_INLINE = COLOR_BRIGHT_BLACK
+
+# Define colors for applications in the Files Overview section
+APP_COLORS = {
+    "Sway": COLOR_KEYWORD,
+    "Waybar": COLOR_VARIABLE,
+    "Kitty": COLOR_KEY_NAME,
+    "Hyprland": "\033[94m", # Blue
+    "Hyprpaper": "\033[95m", # Magenta
+    "Hyprlock": "\033[91m", # Red
+    "WAL": "\033[93m", # Yellow
+    "Sway Scripts": "\033[36m", # Light Cyan
+    "Waybar Scripts": "\033[33m", # Light Yellow
+    "Kitty Scripts": "\033[32m", # Light Green
+    "Hyprland Scripts": "\033[34m", # Light Blue
+    "Hyprpaper Scripts": "\033[35m", # Light Magenta
+    "Hyprlock Scripts": "\033[31m", # Light Red
+    "Other Scripts": "\033[90m", # Bright Black
+    "Sourced": "\033[96m", # Cyan
+    "Other": "\033[90m", # Bright Black
+}
 
 def hex_to_rgb(hex_color):
     """Converts a hex color string to an (R, G, B) tuple."""
@@ -83,6 +103,8 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         all_possible_applications: A list of all applications the reporter can scan for.
         file_collector: A FileCollector instance.
     """
+    sway_config_count = sum(1 for f_meta in file_collector.files.values() if f_meta.type == "sway_config" and f_meta.is_active)
+
     print("-" * 60)
     print("--- Start Report ---")
     print("-" * 60)
@@ -116,21 +138,30 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
                     for var_name, (var_value, file_path) in items.items():
                         # Colorize the variable definition line
                         colored_line = app_colorizer.colorize_line(f"set {var_name} {var_value}", "SWAY")
-                        print(f"    {colored_line} {COMMENT_COLOR_INLINE}(from {os.path.basename(file_path)}){COLOR_RESET}")
+                        if sway_config_count > 1:
+                            print(f"    {colored_line} {COMMENT_COLOR_INLINE}(from {os.path.basename(file_path)}){COLOR_RESET}")
+                        else:
+                            print(f"    {colored_line}{COLOR_RESET}")
             elif category == "Bar Configuration":
                 if items:
                     line, file_path = items
                     colored_line = app_colorizer.colorize_line(line, "SWAY")
                     print()
                     print(f"  [{category}]")
-                    print(f"    {colored_line} {COMMENT_COLOR_INLINE}(from {os.path.basename(file_path)}){COLOR_RESET}")
+                    if sway_config_count > 1:
+                        print(f"    {colored_line} {COMMENT_COLOR_INLINE}(from {os.path.basename(file_path)}){COLOR_RESET}")
+                    else:
+                        print(f"    {colored_line}{COLOR_RESET}")
             elif items:
                 print()
                 print(f"  [{category}]")
                 for item, file_path in items:
                     # Colorize each line item
                     colored_line = app_colorizer.colorize_line(item, "SWAY")
-                    print(f"    {colored_line} {COMMENT_COLOR_INLINE}(from {os.path.basename(file_path)}){COLOR_RESET}")
+                    if sway_config_count > 1:
+                        print(f"    {colored_line} {COMMENT_COLOR_INLINE}(from {os.path.basename(file_path)}){COLOR_RESET}")
+                    else:
+                        print(f"    {colored_line}{COLOR_RESET}")
         print("-" * 40)
         print()
 
@@ -208,7 +239,9 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         print("-" * 40)
         print()
 
-        print("[Files Overview]")
+    print("-" * 40)
+    print("--- Files Overview ---")
+    print("-" * 40)
     sway_active_configs = []
     sway_inactive_configs = []
     waybar_active_configs = []
@@ -223,9 +256,16 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
     hyprlock_inactive_configs = [] # New list for hyprlock
     waybar_styles = []
     wal_generated_files = []
-    scripts = []
     sourced_configs = []
     other_files = []
+
+    sway_scripts = []
+    waybar_scripts = []
+    kitty_scripts = []
+    hyprland_scripts = []
+    hyprpaper_scripts = []
+    hyprlock_scripts = []
+    other_scripts = []
 
     for file_path, metadata in file_collector.files.items():
         if metadata.type == "sway_config":
@@ -263,7 +303,20 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         elif metadata.type == "wal_generated":
             wal_generated_files.append(metadata)
         elif metadata.type == "script":
-            scripts.append(metadata)
+            if metadata.associated_app == "Sway":
+                sway_scripts.append(metadata)
+            elif metadata.associated_app == "Waybar":
+                waybar_scripts.append(metadata)
+            elif metadata.associated_app == "Kitty":
+                kitty_scripts.append(metadata)
+            elif metadata.associated_app == "Hyprland":
+                hyprland_scripts.append(metadata)
+            elif metadata.associated_app == "Hyprpaper":
+                hyprpaper_scripts.append(metadata)
+            elif metadata.associated_app == "Hyprlock":
+                hyprlock_scripts.append(metadata)
+            else:
+                other_scripts.append(metadata)
         elif metadata.type == "sourced_config":
             sourced_configs.append(metadata)
         else:
@@ -271,29 +324,44 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
 
     def print_file_list(title, file_list):
         if file_list:
-            print(f"  {title}:")
+            # Extract application name from title for colorization
+            app_name_match = re.match(r'([A-Za-z]+)', title)
+            colored_title = title
+            if app_name_match:
+                app_name = app_name_match.group(1)
+                color = APP_COLORS.get(app_name, COLOR_KEY_NAME) # Get color from map, default to COLOR_KEY_NAME
+                colored_title = f"{color}{app_name}{COLOR_RESET}{title[len(app_name):]}"
+            
+            print(f"  {colored_title}:")
             for f_meta in file_list:
                 sourced_by_info = ""
                 if f_meta.sourced_by:
                     sourcing_files = [os.path.basename(p) for p in f_meta.sourced_by]
                     sourced_by_info = f" {COLOR_BRIGHT_BLACK}(sourced by: {', '.join(sourcing_files)}){COLOR_RESET}"
-                print(f"  - {f_meta.path}{sourced_by_info}") # Print full path
+                print(f"    - {f_meta.path}{sourced_by_info}") # Print full path with extra indent
 
     print_file_list("Sway Active configurations", sway_active_configs)
+    print_file_list("Sway Scripts", sway_scripts)
     print_file_list("Sway Inactive configurations", sway_inactive_configs)
     print_file_list("Waybar Active configurations", waybar_active_configs)
+    print_file_list("Waybar Styles", waybar_styles)
+    print_file_list("Waybar Scripts", waybar_scripts)
     print_file_list("Waybar Inactive configurations", waybar_inactive_configs)
     print_file_list("Kitty Active configurations", kitty_active_configs)
+    print_file_list("Kitty Scripts", kitty_scripts)
     print_file_list("Kitty Inactive configurations", kitty_inactive_configs)
     print_file_list("Hyprland Active configurations", hyprland_active_configs)
+    print_file_list("Hyprland Scripts", hyprland_scripts)
     print_file_list("Hyprland Inactive configurations", hyprland_inactive_configs)
     print_file_list("Hyprpaper Active configurations", hyprpaper_active_configs)
+    print_file_list("Hyprpaper Scripts", hyprpaper_scripts)
     print_file_list("Hyprpaper Inactive configurations", hyprpaper_inactive_configs)
     print_file_list("Hyprlock Active configurations", hyprlock_active_configs) # New print for hyprlock
+    print_file_list("Hyprlock Scripts", hyprlock_scripts)
     print_file_list("Hyprlock Inactive configurations", hyprlock_inactive_configs) # New print for hyprlock
-    print_file_list("Waybar Styles", waybar_styles)
     print_file_list("Sourced configurations", sourced_configs)
-    print_file_list("Scripts", scripts)
+    if other_scripts: # Only print if there are other scripts
+        print_file_list("Other Scripts", other_scripts)
     print_file_list("Other files", other_files)
 
     # WAL Report Section - moved to the end
