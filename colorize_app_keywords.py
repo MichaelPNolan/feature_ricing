@@ -38,7 +38,10 @@ class AppKeywordColorizer:
             # VARIABLEs (process first to ensure '$' is not consumed by other patterns)
             variables = app_defs.get('VARIABLE', [])
             if variables:
-                patterns.append((re.compile(r'(' + '|'.join(re.escape(v) for v in variables) + r')'), COLOR_VARIABLE))
+                # Explicitly escape '$' in variable patterns
+                escaped_variables = [v.replace('$', r'\$') for v in variables]
+                compiled_variable_pattern = re.compile(r'(' + '|'.join(escaped_variables) + r')')
+                patterns.append((compiled_variable_pattern, COLOR_VARIABLE))
 
             all_keywords = app_defs.get('KEYWORD', [])
             command_keywords = []
@@ -95,35 +98,40 @@ class AppKeywordColorizer:
 
         patterns = self._compile_patterns(app_name)
         
-        all_matches = []
-        for pattern, color in patterns:
-            for match in pattern.finditer(code_part):
-                # Use match.start(1) and match.end(1) for captured group
-                # If pattern has no capturing group, match.start(0) and match.end(0)
-                if pattern.groups > 0:
-                    all_matches.append((match.start(1), match.end(1), color))
-                else:
-                    all_matches.append((match.start(0), match.end(0), color))
-
-
-        all_matches.sort(key=lambda x: x[0])
-
-        colored_code_parts = []
-        last_idx = 0
-        for start, end, color in all_matches:
-            if start < last_idx:
-                continue
-            colored_code_parts.append(code_part[last_idx:start])
-            colored_code_parts.append(color + code_part[start:end] + COLOR_RESET)
-            last_idx = end
-        colored_code_parts.append(code_part[last_idx:])
+        # List of (text, is_colored) tuples
+        # Initially, the whole code_part is one uncolored segment
+        segments = [(code_part, False)] 
         
-        final_line = "".join(colored_code_parts)
+        for pattern, color in patterns:
+            new_segments = []
+            for text, is_colored in segments:
+                if is_colored:
+                    new_segments.append((text, True))
+                    continue
+                
+                last_idx = 0
+                for match in pattern.finditer(text):
+                    start, end = (match.start(1), match.end(1)) if pattern.groups > 0 else (match.start(0), match.end(0))
+                    
+                    # Add the uncolored part before the match
+                    if start > last_idx:
+                        new_segments.append((text[last_idx:start], False))
+                    
+                    # Add the colored part
+                    new_segments.append((color + text[start:end] + COLOR_RESET, True))
+                    last_idx = end
+                
+                # Add any remaining uncolored part after the last match
+                if last_idx < len(text):
+                    new_segments.append((text[last_idx:], False))
+            segments = new_segments
+        
+        final_code_part = "".join([text for text, _ in segments])
 
         if comment_part:
-            final_line += COLOR_COMMENT + comment_part + COLOR_RESET
+            final_code_part += COLOR_COMMENT + comment_part + COLOR_RESET
         
-        return final_line
+        return final_code_part
 
 # Example Usage (for testing this module directly)
 if __name__ == '__main__':
