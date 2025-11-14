@@ -35,8 +35,8 @@ def parse_sway_config(config_path, file_collector):
         resolved_appearance.append((item, file_path))
     features["Design and Appearance"] = resolved_appearance
 
-
-    return features
+    defined_variables = list(features["Variables"].keys())
+    return features, defined_variables
 
 def _parse_sway_file(file_path, features, file_collector):
     """

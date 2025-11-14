@@ -4,7 +4,7 @@ import os
 from colorize_app_keywords import AppKeywordColorizer, COLOR_BRIGHT_BLACK, COLOR_RESET, COLOR_KEY_NAME, COLOR_VARIABLE, COLOR_KEYWORD
 
 # Initialize the generic colorizer
-app_colorizer = AppKeywordColorizer()
+
 
 # Custom colors for the report
 COMMENT_COLOR_INLINE = COLOR_BRIGHT_BLACK
@@ -39,13 +39,18 @@ def hex_to_rgb(hex_color):
     except ValueError:
         return None
 
-def print_waybar_modules(waybar_modules):
+def print_waybar_modules(waybar_modules, waybar_duplicates):
     """Prints the Waybar modules section."""
     print()
     print("-" * 40)
     print("--- Waybar Modules ---")
     print("-" * 40)
     print()
+    if waybar_duplicates:
+        print("  [!] Duplicate modules found:")
+        for dup in waybar_duplicates:
+            print(f"    - Module '{dup['module']}' found on line {dup['original_line']} and line {dup['line']}")
+        print()
     if waybar_modules:
         for position, modules in waybar_modules.items():
             if modules:
@@ -92,7 +97,7 @@ def print_waybar_modules(waybar_modules):
         print("  No Waybar modules found.")
     print("-" * 40)
 
-def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_features, hyprpaper_features, hyprlock_config_paths, detected_applications, all_possible_applications, file_collector):
+def generate_report(sway_features, waybar_modules, waybar_duplicates, kitty_configs, hyprland_features, hyprpaper_features, hyprlock_config_paths, detected_applications, all_possible_applications, file_collector, sway_defined_variables):
     """
     Generates a report of the enabled features.
 
@@ -106,7 +111,9 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         detected_applications: A list of application names that were detected.
         all_possible_applications: A list of all applications the reporter can scan for.
         file_collector: A FileCollector instance.
+        sway_defined_variables: A list of dynamically defined Sway variables.
     """
+    app_colorizer = AppKeywordColorizer(dynamic_variables=sway_defined_variables)
     sway_config_count = sum(1 for f_meta in file_collector.files.values() if f_meta.type == "sway_config" and f_meta.is_active)
 
     print("-" * 60)
@@ -174,7 +181,7 @@ def generate_report(sway_features, waybar_modules, kitty_configs, hyprland_featu
         print()
 
     if "Waybar" in detected_applications:
-        print_waybar_modules(waybar_modules)
+        print_waybar_modules(waybar_modules, waybar_duplicates)
 
     if "Kitty" in detected_applications:
         print()

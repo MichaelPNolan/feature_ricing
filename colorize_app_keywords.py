@@ -9,14 +9,17 @@ COLOR_KEY_NAME = "\033[92m" # Green
 COLOR_COMMENT = "\033[33m" # Brown/Yellow for comments
 COLOR_BRIGHT_BLACK = "\x1b[90m" # Often used for comments
 COLOR_BRACKET = "\033[95m" # Magenta for curly brackets
+COLOR_OPTION = "\033[36m" # Cyan for options/flags
+COLOR_NUMBER = "\033[34m" # Blue for numbers
 
 class AppKeywordColorizer:
-    def __init__(self, config_file='app_keyword_defs.conf'):
+    def __init__(self, config_file='app_keyword_defs.conf', dynamic_variables=None):
         self.keyword_defs = self._load_keyword_definitions(config_file)
         self.compiled_patterns = {}
+        self.dynamic_variables = dynamic_variables # Store dynamic variables
 
     def _load_keyword_definitions(self, config_file):
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(interpolation=None)
         config.read(config_file)
         
         defs = {}
@@ -32,27 +35,43 @@ class AppKeywordColorizer:
             app_defs = self.keyword_defs.get(app_name, {})
             patterns = []
 
-            # KEYWORDs
-            keywords = app_defs.get('KEYWORD', [])
-            if keywords:
-                # Sort keywords by length in descending order to prioritize longer matches
-                keywords.sort(key=len, reverse=True)
-                patterns.append((re.compile(r'\b(' + '|'.join(re.escape(k) for k in keywords) + r')\b'), COLOR_KEYWORD))
-
-            # VARIABLEs
+            # VARIABLEs (process first to ensure '$' is not consumed by other patterns)
             variables = app_defs.get('VARIABLE', [])
             if variables:
-                # Assuming variables are simple regex patterns like '$[a-zA-Z0-9_]+'
-                patterns.append((re.compile(r'(' + '|'.join(variables) + r')'), COLOR_VARIABLE))
+                patterns.append((re.compile(r'(' + '|'.join(re.escape(v) for v in variables) + r')'), COLOR_VARIABLE))
+
+            all_keywords = app_defs.get('KEYWORD', [])
+            command_keywords = []
+            option_keywords = []
+            
+            # Separate keywords into commands and options
+            for k in all_keywords:
+                if k.startswith('-'):
+                    option_keywords.append(k)
+                elif len(k) > 1 or k in ['h', 'v', 'n']: # Explicitly keep single-char commands if they are common, removed 't'
+                    command_keywords.append(k)
+
+            if command_keywords:
+                command_keywords.sort(key=len, reverse=True)
+                patterns.append((re.compile(r'\b(' + '|'.join(re.escape(k) for k in command_keywords) + r')\b'), COLOR_KEYWORD))
+            
+            if option_keywords:
+                option_keywords.sort(key=len, reverse=True)
+                patterns.append((re.compile(r'\b(' + '|'.join(re.escape(k) for k in option_keywords) + r')\b'), COLOR_OPTION))
+
+            # Numbers
+            numbers = app_defs.get('NUMBER', [])
+            if numbers:
+                patterns.append((re.compile(r'\b(' + '|'.join(numbers) + r')\b'), COLOR_NUMBER))
 
             # KEY_NAMEs
             key_names = app_defs.get('KEY_NAME', [])
             if key_names:
-                # Sort key_names by length in descending order
                 key_names.sort(key=len, reverse=True)
-                # Use non-word boundary at start and lookahead for non-word char or end for flexibility
                 patterns.append((re.compile(r'(?:^|[\s+])(' + '|'.join(re.escape(k) for k in key_names) + r')(?=\W|$)', re.IGNORECASE), COLOR_KEY_NAME))
             
+
+
             # Curly Brackets
             patterns.append((re.compile(r'([{}])'), COLOR_BRACKET))
 

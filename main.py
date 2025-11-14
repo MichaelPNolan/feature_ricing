@@ -21,10 +21,12 @@ def main():
     sway_config_paths = file_collector.find_sway_configs()
     sway_variables = {}
     sway_features = {}
+    sway_defined_variables = [] # Initialize list to collect all defined variables
     for config_path in sway_config_paths:
-        current_features = parse_sway_config(config_path, file_collector)
+        current_features, current_defined_variables = parse_sway_config(config_path, file_collector)
         sway_features.update(current_features)
         sway_variables.update(current_features.get("Variables", {}))
+        sway_defined_variables.extend(current_defined_variables) # Collect defined variables
     
     # Collect Waybar configurations
     waybar_config_paths = file_collector.find_waybar_configs()
@@ -46,12 +48,16 @@ def main():
         return # Exit early after debug output
     
     waybar_modules = {}
+    waybar_duplicates = []
     for config_path in waybar_config_paths:
-        modules = parse_waybar_config(config_path, sway_variables, waybar_style_colors)
+        result = parse_waybar_config(config_path, sway_variables, waybar_style_colors)
+        modules = result["modules"]
+        duplicates = result["duplicates"]
         for position, module_list in modules.items():
             if position not in waybar_modules:
                 waybar_modules[position] = []
             waybar_modules[position].extend(module_list)
+        waybar_duplicates.extend(duplicates)
 
     # Collect Kitty configurations
     kitty_config_paths = file_collector.find_kitty_configs()
@@ -102,7 +108,7 @@ def main():
     all_possible_applications = ["Sway", "Waybar", "Kitty", "Hyprland", "Hyprpaper", "Hyprlock"] # Update all_possible_applications
 
     # Generate final report if not in debug mode
-    generate_report(sway_features, waybar_modules, kitty_configs, hyprland_features, hyprpaper_features, hyprlock_config_paths, detected_applications, all_possible_applications, file_collector) # Pass hyprlock_config_paths
+    generate_report(sway_features, waybar_modules, waybar_duplicates, kitty_configs, hyprland_features, hyprpaper_features, hyprlock_config_paths, detected_applications, all_possible_applications, file_collector, sway_defined_variables) # Pass hyprlock_config_paths and sway_defined_variables
 
 if __name__ == "__main__":
     # This part is for demonstration. In a real scenario, you'd call colorize_hyprland_config_file
